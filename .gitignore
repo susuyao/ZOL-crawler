@@ -1,0 +1,5 @@
+
+.gitignore
+.idea/
+Gemfile.lock
+data/~$moblie.xlsx
