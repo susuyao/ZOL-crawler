@@ -2,6 +2,5 @@
 
 source 'http://gems.ruby-china.org/'
 
-gem 'spreadsheet'
-
 gem 'sqlite3'
+gem 'rubyXL'
