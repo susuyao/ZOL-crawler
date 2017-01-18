@@ -4,6 +4,8 @@
 require 'rubyXL'
 require 'sqlite3'
 require 'set'
+require 'open-uri'
+require 'nokogiri'
 
 class DataPrepare
 
@@ -65,6 +67,28 @@ class DataPrepare
 
   end
 
+  #从数据库中获取keyword的值
+  def read_keywords_from_sqlite(db)
+    keywords = []
+
+    db.execute('select KEY_WORD from MOBILE').each do |row|
+      keywords << row[0]
+    end
+
+    keywords
+  end
+
+  #爬取页面:找到手机信息所在的参数页面url
+  def parse_page(keyword)
+
+    url = "http://search.zol.com.cn/s/all.php?kword=#{URI.escape(keyword)}" #新url,手机查询
+    doc = Nokogiri::HTML(open url)
+    params = doc.css('.param-more')
+
+    params[0]['href'] unless params.empty?
+
+  end
+
 end
 
 
@@ -72,3 +96,8 @@ a = DataPrepare.new
 db = a.init_db 'data.db'
 keywords = a.read_keywords_from_excel('data/moblie.xlsx', 'Sheet1')
 a.write_keywords_to_db(keywords, db)
+keywords = a.read_keywords_from_sqlite(db)
+keywords.each do |cell|
+  puts "#{cell}: #{a.parse_page(cell)}"
+end
+
